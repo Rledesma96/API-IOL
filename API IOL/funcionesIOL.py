@@ -15,9 +15,13 @@ def token():
             'password': config.password,
             'grant_type':'password'
             }
-    access = json.loads(requests.post(url=url, data=data).text)['access_token']
-    refresh = json.loads(requests.post(url=url, data=data).text)['refresh_token']
-    return access
+    
+    try:
+        access = json.loads(requests.post(url=url, data=data).text)['access_token']
+        refresh = json.loads(requests.post(url=url, data=data).text)['refresh_token']
+        return access
+    except KeyError:
+        raise ValueError("El usuario o contraseña no son válidos")
 
 # =============================================================================
 # Acceso a los datos de mi cuenta
@@ -70,7 +74,12 @@ def operaciones(estado:str,desde:str,hasta:str,pais:str):
 # =============================================================================
 
 def cotizacion(simbolo:str, simple = False):
-    headers = {'Authorization': 'Bearer ' + token()}
+    try:
+        access_token = token()
+        headers = {'Authorization': 'Bearer ' + access_token}
+    except ValueError as error:
+        raise ValueError("El usuario o contraseña no son válidos") from error
+    
     url = "https://api.invertironline.com/api/v2/bCBA/Titulos/"+str(simbolo)+\
         "/CotizacionDetalle"
     data = {'mercado':'bCBA',
@@ -189,5 +198,4 @@ def vender_stock(simbolo:str,
     else:
         vender = requests.post(url, headers=headers, data=data)
         print(vender.text)
-
 

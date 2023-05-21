@@ -31,6 +31,10 @@ def crear_consulta(consulta: schemas.Consulta, db: Session = Depends(get_db)):
     """Este enpoint permite agregar un nuevo registro a la tabla Consultas
     
     """
-    db_proveedor = crud.consulta_precio(db=db)
+
+    try:
+        db_proveedor = crud.consulta_precio(db=db)
+        return db_proveedor
     
-    return db_proveedor
+    except ValueError as error:
+        raise HTTPException(status_code=401, detail="El usuario y contraseña no son correctos")
