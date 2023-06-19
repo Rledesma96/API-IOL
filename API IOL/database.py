@@ -9,4 +9,4 @@ sql_database_url = "sqlite:///./API-IOL.db"
 
 engine = create_engine(sql_database_url, connect_args={"check_same_thread":False})
 SessionLocal = sessionmaker(autocommit = False, autoflush = False, bind=engine)
-Base = declarative_base()
+Base = declarative_base() 
