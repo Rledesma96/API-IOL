@@ -31,8 +31,11 @@ def get_db():
 def home():
     """ Endpoint para dar la bienvenida
     """
+    response_data = {"messagge":"Bienvenidos a la API",
+                     }
     
-    return {"Bienvenidos a la API"}
+    return response_data
+
 
 @app.post("/consultas/", response_model=schemas.Consulta, tags=['Nueva alta en tabla Consultas'])
 @limiter.limit("1/minute")
