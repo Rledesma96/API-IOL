@@ -1,3 +1,9 @@
 __pycache__/config.cpython-39.pyc
 __pycache__/database.cpython-39.pyc
 __pycache__/main.cpython-39.pyc
+API-IOL.db
+.gitignore
+__pycache__/crud.cpython-39.pyc
+__pycache__/funcionesIOL.cpython-39.pyc
+__pycache__/models.cpython-39.pyc
+__pycache__/schemas.cpython-39.pyc

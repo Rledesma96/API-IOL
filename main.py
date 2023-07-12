@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Request, Response
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -28,7 +28,7 @@ def get_db():
 
 @app.get("/")
 @limiter.exempt
-def home():
+def home(request: Request):
     """ Endpoint para dar la bienvenida
     """
     response_data = {"messagge":"Bienvenidos a la API",
@@ -39,7 +39,7 @@ def home():
 
 @app.post("/consultas/", response_model=schemas.Consulta, tags=['Nueva alta en tabla Consultas'])
 @limiter.limit("1/minute")
-def crear_consulta(consulta: schemas.Consulta, db: Session = Depends(get_db)):
+def crear_consulta(request : Request, consulta: schemas.Consulta, db: Session = Depends(get_db)):
     """Este enpoint permite agregar un nuevo registro a la tabla Consultas
     
     """
