@@ -197,4 +197,3 @@ def vender_stock(simbolo:str,
 
 #datos_perfil()
 
-operaciones('todas','01/01/2023','31/03/2023','argentina')
