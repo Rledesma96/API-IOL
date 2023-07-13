@@ -66,8 +66,14 @@ def operaciones(estado:str,desde:str,hasta:str,pais:str):
             'filtro.fechaHasta': hasta,
             'filtro.pais': pais
             }
-    r = requests.get(url=url, headers=headers, data=data)
-    print(r)
+    r = requests.get(url=url, headers=headers, data=data).text
+    respuesta = json.loads(r)
+    message = respuesta['message']
+
+    if message == "En estos momentos estamos trabajando en la actualización de la información solicitada.":
+        print("LA api esta caida")
+    else:
+        print(r)
 
 # =============================================================================
 # Obtencion de Datos de mercado
@@ -135,7 +141,7 @@ def cotizacion_historica(mercado:str, simbolo:str,desde:str,hasta:str):
     url = "https://api.invertironline.com/api/v2/"+\
         str(mercado)+"/Titulos/"+str(simbolo)+"/Cotizacion/seriehistorica/"+\
             str(desde) + str(hasta)+"ajustada"
-    r = requests.get(url=url, headers=headers).text
+    r = requests.get(url=url, headers=headers)
     return r
 
 def comprar_stock(simbolo: str,
@@ -197,3 +203,4 @@ def vender_stock(simbolo:str,
 
 #datos_perfil()
 
+operaciones('todas', '2023-03-01', '2023-07-12','argentina')

@@ -46,12 +46,12 @@ def datos_perfil(request: Request):
 
     return Response(content=response_data, media_type="application/json")
 
-@app.get("/CotizacionHistorica")
+@app.post("/Operaciones")
 @limiter.limit("5/minute")
-def cotizacion_historica(request: Request, mercado:str, simbolo:str, desde:str, hasta:str):
+def operaciones(item: models.Operacion, request: Request):
     """Solcitar datos del pefil de IOL
     """
-    response_data = funcionesIOL.cotizacion_historica(mercado, simbolo, desde, hasta)
+    response_data = funcionesIOL.operaciones(item.estado, item.desde, item.hasta, item.pais)
 
     return Response(content=response_data, media_type="application/json")
 

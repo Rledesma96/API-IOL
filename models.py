@@ -1,7 +1,7 @@
 from sqlalchemy import Boolean, Column, Integer, String, Float
 from datetime import datetime 
 from database import Base
-
+from pydantic import BaseModel
 class Consultas(Base):
     __tablename__ = "Consultas"
 
@@ -41,4 +41,8 @@ class TradesLong(Base):
     Fecha_Trade = Column(String, index=True)
 
 
-
+class Operacion(BaseModel):
+    estado: str = 'todas'
+    desde: str
+    hasta: str
+    pais: str = 'argentina'
