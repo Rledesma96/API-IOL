@@ -5,6 +5,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address, get_ipaddr
 from slowapi.errors import RateLimitExceeded
 import crud
+import funcionesIOL
 import models
 import schemas
 
@@ -35,6 +36,24 @@ def home(request: Request):
                      }
     
     return response_data
+
+@app.get("/DatosPerfil")
+@limiter.exempt
+def datos_perfil(request: Request):
+    """Solcitar datos del pefil de IOL
+    """
+    response_data = funcionesIOL.datos_perfil()
+
+    return Response(content=response_data, media_type="application/json")
+
+@app.get("/CotizacionHistorica")
+@limiter.limit("5/minute")
+def cotizacion_historica(request: Request, mercado:str, simbolo:str, desde:str, hasta:str):
+    """Solcitar datos del pefil de IOL
+    """
+    response_data = funcionesIOL.cotizacion_historica(mercado, simbolo, desde, hasta)
+
+    return Response(content=response_data, media_type="application/json")
 
 
 @app.post("/consultas/", response_model=schemas.Consulta, tags=['Nueva alta en tabla Consultas'])

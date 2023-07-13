@@ -1,5 +1,6 @@
 import requests
 import json
+import pandas as pd
 from typing import Union
 import datetime
 import config
@@ -27,9 +28,12 @@ def datos_perfil():
     headers = {'Authorization': 'Bearer ' + token()}
     url = "https://api.invertironline.com/api/v2/datos-perfil"
     r = requests.get(url=url, headers=headers).text
-    respuesta = json.loads(r)
-    
-    print(respuesta['apellido'])
+    #response = json.loads(r)
+    #data_perfil = pd.DataFrame()
+    #data_perfil['Categorias'] = response.key
+    #data_perfil['Valores'] = response.values 
+
+    return r 
 
 
 def estado_cuenta():
@@ -62,7 +66,7 @@ def operaciones(estado:str,desde:str,hasta:str,pais:str):
             'filtro.fechaHasta': hasta,
             'filtro.pais': pais
             }
-    r = requests.get(url=url, headers=headers, data=data).text['apellido']
+    r = requests.get(url=url, headers=headers, data=data)
     print(r)
 
 # =============================================================================
@@ -132,7 +136,7 @@ def cotizacion_historica(mercado:str, simbolo:str,desde:str,hasta:str):
         str(mercado)+"/Titulos/"+str(simbolo)+"/Cotizacion/seriehistorica/"+\
             str(desde) + str(hasta)+"ajustada"
     r = requests.get(url=url, headers=headers).text
-    print(r)
+    return r
 
 def comprar_stock(simbolo: str,
                   cantidad: int,
@@ -191,3 +195,6 @@ def vender_stock(simbolo:str,
         print(vender.text)
 
 
+#datos_perfil()
+
+operaciones('todas','01/01/2023','31/03/2023','argentina')
