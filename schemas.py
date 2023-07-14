@@ -42,6 +42,11 @@ class TradesLong(BaseModel):
         orm_mode = True
     pass
     
+class Operacion(BaseModel):
+    estado: str = 'todas'
+    desde: str
+    hasta: str
+    pais: str = 'argentina'
 
     
 

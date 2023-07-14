@@ -41,8 +41,3 @@ class TradesLong(Base):
     Fecha_Trade = Column(String, index=True)
 
 
-class Operacion(BaseModel):
-    estado: str = 'todas'
-    desde: str
-    hasta: str
-    pais: str = 'argentina'

@@ -49,7 +49,7 @@ def portafolio():
     r = requests.get(url=url, headers=headers, data=data).text
     return r
 
-def operaciones(estado:str,desde:str,hasta:str,pais:str):
+def consulta_operaciones(estado:str,desde:str,hasta:str,pais:str):
     #Valores permitidos
     estado_correcto = ['todas', 'pendientes','terminadas','canceladas']
     if estado not in estado_correcto:
@@ -57,7 +57,7 @@ def operaciones(estado:str,desde:str,hasta:str,pais:str):
     
     pais_correcto = 'argentina'
     if pais != pais_correcto:
-        return "El valor especificado en Pais no es un parametro valido"    
+        return "El valor especificado en Pais no es un parametro valido, por el momento solo se permite argentina"    
     
     headers = {'Authorization': 'Bearer ' + token()}
     url = "https://api.invertironline.com/api/v2/operaciones"
@@ -66,14 +66,10 @@ def operaciones(estado:str,desde:str,hasta:str,pais:str):
             'filtro.fechaHasta': hasta,
             'filtro.pais': pais
             }
+    
     r = requests.get(url=url, headers=headers, data=data).text
-    respuesta = json.loads(r)
-    message = respuesta['message']
-
-    if message == "En estos momentos estamos trabajando en la actualización de la información solicitada.":
-        print("LA api esta caida")
-    else:
-        print(r)
+    
+    return r
 
 # =============================================================================
 # Obtencion de Datos de mercado
@@ -203,4 +199,5 @@ def vender_stock(simbolo:str,
 
 #datos_perfil()
 
-operaciones('todas', '2023-03-01', '2023-07-12','argentina')
+
+#print(consulta_operaciones('todas','2023-01-01','2023-03-31','argentina'))

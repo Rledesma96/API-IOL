@@ -4,9 +4,9 @@ import schemas
 import funcionesIOL
 import json
 
-def consulta_precio(db:Session):
-    datos = funcionesIOL.cotizacion("COME", simple=True)
-    consulta = schemas.Consulta(Stock="COME",\
+def consulta_precio(stock:str, db:Session):
+    datos = funcionesIOL.cotizacion(stock, simple=True)
+    consulta = schemas.Consulta(Stock=stock,\
                                 Last = float(json.loads(datos)['ultimoPrecio']),\
                                 Fecha_consulta = str(json.loads(datos)['date']),\
                                 Bid = float((json.loads(datos)['Bid'])),\

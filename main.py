@@ -4,6 +4,7 @@ from database import SessionLocal, engine
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address, get_ipaddr
 from slowapi.errors import RateLimitExceeded
+from enum import Enum
 import crud
 import funcionesIOL
 import models
@@ -37,7 +38,7 @@ def home(request: Request):
     
     return response_data
 
-@app.get("/DatosPerfil")
+@app.get("/DatosPerfil", summary="Consulta Datos del Perfil", description="Consulta los datos del perfil seleccionado", tags=['Consulta de datos del Perfil'])
 @limiter.exempt
 def datos_perfil(request: Request):
     """Solcitar datos del pefil de IOL
@@ -46,12 +47,13 @@ def datos_perfil(request: Request):
 
     return Response(content=response_data, media_type="application/json")
 
-@app.post("/Operaciones")
-@limiter.limit("5/minute")
-def operaciones(item: models.Operacion, request: Request):
+@app.post("/operaciones",tags=['Consulta Operaciones'])
+@limiter.limit("20/minute")
+def operaciones(item: schemas.Operacion, request: Request):
     """Solcitar datos del pefil de IOL
     """
-    response_data = funcionesIOL.operaciones(item.estado, item.desde, item.hasta, item.pais)
+    response_data = funcionesIOL.consulta_operaciones(item.estado, item.desde, item.hasta, item.pais)
+    #response_data.headers["X-Cat-Dog"] = "alone in the world" Primero se debe instanciar la clase Response
 
     return Response(content=response_data, media_type="application/json")
 
@@ -62,6 +64,6 @@ def crear_consulta(request : Request, consulta: schemas.Consulta, db: Session = 
     """Este enpoint permite agregar un nuevo registro a la tabla Consultas
     
     """
-    db_proveedor = crud.consulta_precio(db=db)
+    db_proveedor = crud.consulta_precio(stock = consulta.Stock, db=db)
     
     return db_proveedor
