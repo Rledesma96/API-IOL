@@ -107,29 +107,33 @@ def cotizacion(simbolo:str, simple = False):
         return asa
 
     
-def mep(simbolo = None):
+def mep(simbolo:str = None):
     bonos_locales = ['AL29','AL30','AL35','AE38','AL41']
     bonos_exterior = ['GD29','GD30','GD35','GD38','GD41','GD46']
     headers = {'Authorization': 'Bearer ' + token()}
     mep = {}
-    if simbolo != None:
+    
+    if simbolo in bonos_locales +  bonos_exterior:
         url = "https://api.invertironline.com/api/v2/Cotizaciones/MEP/"+str(simbolo)
         data = {'simbolo':simbolo}
-        r = requests.get(url=url,data=data, headers=headers).text
-        return print(r)
-    else:
+        r = requests.get(url=url, data=data, headers=headers).json()
+        return r
+    
+    elif simbolo == "todos":
         for i in bonos_locales:
             url = "https://api.invertironline.com/api/v2/Cotizaciones/MEP/"+str(i)
             data = {'simbolo':i}
-            r = requests.get(url=url,data=data, headers=headers).text
+            r = requests.get(url=url,data=data, headers=headers).json()
             mep[i] = r
         for j in bonos_exterior:
             url = "https://api.invertironline.com/api/v2/Cotizaciones/MEP/"+str(j)
             data = {'simbolo':j}
-            r = requests.get(url=url,data=data, headers=headers).text
+            r = requests.get(url=url,data=data, headers=headers).json()
             mep[j] = r
             
-        return print(mep)
+        return mep
+    
+    return {"error":"El simbolo ingresado no tiene MEP"}
 
 
 def cotizacion_historica(mercado:str, simbolo:str,desde:str,hasta:str):
@@ -196,8 +200,4 @@ def vender_stock(simbolo:str,
         vender = requests.post(url, headers=headers, data=data)
         print(vender.text)
 
-
-#datos_perfil()
-
-
-#print(consulta_operaciones('todas','2023-01-01','2023-03-31','argentina'))
+print(type(mep("AL29")))
