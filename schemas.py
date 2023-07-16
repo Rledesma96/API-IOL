@@ -48,5 +48,5 @@ class Operacion(BaseModel):
     hasta: str
     pais: str = 'argentina'
 
-    
-
+class ConsultaMep(BaseModel):
+    simbolo:str = None

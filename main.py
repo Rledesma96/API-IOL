@@ -62,8 +62,8 @@ def operaciones(item: schemas.Operacion, request: Request):
           tags=['Cotizacion Mep'],
           description="Obtiene los valores del MEP del ticker asignado en caso de existir")
 @limiter.limit("20/minute")
-def mep(simbolo:str, request:Request):
-    response_data = funcionesIOL.mep(simbolo)
+def mep(simbolo: schemas.ConsultaMep, request:Request):
+    response_data = funcionesIOL.mep(simbolo.simbolo)
     if response_data is None:
         raise HTTPException(status_code=422, detail="Ticker Nulo")
     elif isinstance(response_data, dict) | isinstance(response_data, float) :

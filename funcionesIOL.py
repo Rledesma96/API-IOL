@@ -199,5 +199,3 @@ def vender_stock(simbolo:str,
     else:
         vender = requests.post(url, headers=headers, data=data)
         print(vender.text)
-
-print(type(mep("AL29")))
