@@ -216,4 +216,3 @@ def vender_stock(simbolo:str,
         vender = requests.post(url, headers=headers, data=data)
         print(vender.text)
 
-print(estado_cuenta())
