@@ -39,16 +39,28 @@ def datos_perfil():
 def estado_cuenta():
     headers = {'Authorization': 'Bearer ' + token()}
     url = "https://api.invertironline.com/api/v2/estadocuenta"
-    r = requests.get(url=url, headers=headers).text
-    return r
+    r = requests.get(url=url, headers=headers)
+    if r.status_code==200:
+        data = r.json()
+        if "message" in data and data['message'] == "En estos momentos estamos trabajando en la actualización de la información solicitada.":
+            return "API Caida"
+        else:
+            return r
+    else:
+        return r
 
 def portafolio():
     headers = {'Authorization': 'Bearer ' + token()}
     url = "https://api.invertironline.com/api/v2/portafolio"
     data = {'pais':'argentina'}
-    r = requests.get(url=url, headers=headers, data=data).text
-    return r
-
+    r = requests.get(url=url, headers=headers, data=data)
+    if r.status_code==200:
+        data = r.json()
+        if "message" in data and data['message'] == "En estos momentos estamos trabajando en la actualización de la información solicitada.":
+            return "API Caida"
+        else:
+            return r
+        
 def consulta_operaciones(estado:str,desde:str,hasta:str,pais:str):
     #Valores permitidos
     estado_correcto = ['todas', 'pendientes','terminadas','canceladas']
@@ -67,9 +79,13 @@ def consulta_operaciones(estado:str,desde:str,hasta:str,pais:str):
             'filtro.pais': pais
             }
     
-    r = requests.get(url=url, headers=headers, data=data).text
-    
-    return r
+    r = requests.get(url=url, headers=headers, data=data)
+    if r.status_code==200:
+        data = r.json()
+        if "message" in data and data['message'] == "En estos momentos estamos trabajando en la actualización de la información solicitada.":
+            return "API Caida"
+        else:
+            return r
 
 # =============================================================================
 # Obtencion de Datos de mercado
@@ -199,3 +215,5 @@ def vender_stock(simbolo:str,
     else:
         vender = requests.post(url, headers=headers, data=data)
         print(vender.text)
+
+print(estado_cuenta())

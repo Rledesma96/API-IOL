@@ -39,7 +39,10 @@ def home(request: Request):
     
     return response_data
 
-@app.get("/DatosPerfil", summary="Consulta Datos del Perfil", description="Consulta los datos del perfil seleccionado", tags=['Consulta de datos del Perfil'])
+@app.get("/DatosPerfil", 
+         summary="Consulta Datos del Perfil", 
+         description="Consulta los datos del perfil seleccionado", 
+         tags=['Consulta de datos del Perfil'])
 @limiter.exempt
 def datos_perfil(request: Request):
     """Solcitar datos del pefil de IOL
@@ -48,8 +51,40 @@ def datos_perfil(request: Request):
 
     return Response(content=response_data, media_type="application/json")
 
+@app.get("/EstadoCuenta", 
+         summary="Consulta El estado de cuenta", 
+         description="Consulta el estado de cuenta del cliente", 
+         tags=['Estado de Cuenta'])
+@limiter.exempt
+def datos_perfil(request: Request):
+    """Solcitar datos del pefil de IOL
+    """
+    response_data = funcionesIOL.estado_cuenta()
+
+    if response_data=="API Caida":
+        raise HTTPException (status_code=503, detail="API Caida, Servicio No Disponible")
+    else:
+        return Response(content=response_data, media_type="application/json")
+
+@app.get("/Portafolio", 
+         summary="Consulta El Portafolio", 
+         description="Consulta el portafolio del cliente", 
+         tags=['Composicion del Portafolio'])
+@limiter.exempt
+def datos_perfil(request: Request):
+    """Solcitar datos del pefil de IOL
+    """
+    response_data = funcionesIOL.portafolio()
+
+    return Response(content=response_data, media_type="application/json")
+
+
+
+
+
 @app.post("/operaciones",tags=['Consulta Operaciones'])
-@limiter.limit("20/minute")
+@limiter.limit("20/minute",
+               error_message="Superado el máximo de consultas permitido por minuto")
 def operaciones(item: schemas.Operacion, request: Request):
     """Solcitar datos del pefil de IOL
     """
@@ -61,7 +96,8 @@ def operaciones(item: schemas.Operacion, request: Request):
 @app.post("/mep", 
           tags=['Cotizacion Mep'],
           description="Obtiene los valores del MEP del ticker asignado en caso de existir")
-@limiter.limit("20/minute")
+@limiter.limit("20/minute", 
+               error_message="Superado el máximo de consultas permitido por minuto")
 def mep(simbolo: schemas.ConsultaMep, request:Request):
     response_data = funcionesIOL.mep(simbolo.simbolo)
     if response_data is None:
@@ -73,7 +109,8 @@ def mep(simbolo: schemas.ConsultaMep, request:Request):
 
 
 @app.post("/consultas/", response_model=schemas.Consulta, tags=['Nueva alta en tabla Consultas'])
-@limiter.limit("1/minute")
+@limiter.limit("1/minute", 
+               error_message="Superado el máximo de consultas permitido por minuto")
 def crear_consulta(request : Request, consulta: schemas.Consulta, db: Session = Depends(get_db)):
     """Este enpoint permite agregar un nuevo registro a la tabla Consultas
     
