@@ -118,3 +118,22 @@ def crear_consulta(request : Request, consulta: schemas.Consulta, db: Session = 
     db_proveedor = crud.consulta_precio(stock = consulta.Stock, db=db)
     
     return db_proveedor
+
+@app.post("/Trade/", response_model=schemas.Orden, tags=['Comprar Stock'])
+@limiter.limit("10/minute", 
+               error_message="Superado el máximo de consultas permitido por minuto")
+def trade_long(request: Request, orden: schemas.Orden, db: Session = Depends(get_db)):
+    operacion = funcionesIOL.comprar_stock(simbolo=orden.simbolo,
+                                           cantidad=orden.cantidad,
+                                           precio=orden.precio,
+                                           plazo = orden.plazo,
+                                           validez=orden.validez)
+    return Response(content=json.dumps(operacion), media_type="application/json")
+
+
+
+
+
+
+
+

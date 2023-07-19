@@ -50,3 +50,11 @@ class Operacion(BaseModel):
 
 class ConsultaMep(BaseModel):
     simbolo:str = None
+
+class Orden(BaseModel):
+    mercado: str = "bCBA" #Las opciones son bCBA o estados_Unidos
+    simbolo: str
+    cantidad: int
+    precio: Union[float, int]
+    plazo: str #t0, t1, t2
+    validez: str #Ejemplo: 2023-05-31

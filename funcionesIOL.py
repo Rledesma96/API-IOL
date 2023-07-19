@@ -149,6 +149,12 @@ def mep(simbolo:str = None):
             
         return mep
     
+    elif isinstance(simbolo, int):
+        return {"error":"El Simbolo debe ser en letras, no en números"}
+    
+    elif isinstance(simbolo, float):
+        return {"error":"El Simbolo debe ser en letras, no en números"}
+    
     return {"error":"El simbolo ingresado no tiene MEP"}
 
 
@@ -160,11 +166,13 @@ def cotizacion_historica(mercado:str, simbolo:str,desde:str,hasta:str):
     r = requests.get(url=url, headers=headers)
     return r
 
-def comprar_stock(simbolo: str,
+def comprar_stock(
+                  simbolo: str,
                   cantidad: int,
                   precio: float,
                   plazo: str,
-                  validez:str):
+                  validez:str,
+                  mercado:str  = "bCBA"):
     
     headers = {'Authorization': 'Bearer ' + token()}
     url = "https://api.invertironline.com/api/v2/Operar/Comprar"
@@ -172,15 +180,15 @@ def comprar_stock(simbolo: str,
             'simbolo': simbolo,
             'cantidad': cantidad,
             'precio': precio,
-            'plazo': plazo,
-            'validez':validez,
+            'plazo': plazo, #t0, t1 o t2
+            'validez':validez, #fecha en formato texto ejemplo: 2023-05-23
             }
     
-    if (cantidad*precio) > json.loads(estado_cuenta())['cuentas'][0]['disponible']:
+    if (cantidad*precio) > estado_cuenta().json()['cuentas'][0]['disponible']:
         print ("No tenes saldo suficiente en la cuenta")
     else:
         comprar = requests.post(url, headers=headers, data=data)
-        print(comprar.text)
+        return comprar.text
     
 def vender_stock(simbolo:str,
                 cantidad:int,
@@ -215,4 +223,6 @@ def vender_stock(simbolo:str,
     else:
         vender = requests.post(url, headers=headers, data=data)
         print(vender.text)
+
+#comprar_stock("BOLT", 1, 15,"t0","2023-12-31")
 
