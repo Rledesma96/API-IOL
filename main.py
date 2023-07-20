@@ -49,14 +49,14 @@ def datos_perfil(request: Request):
     """
     response_data = funcionesIOL.datos_perfil()
 
-    return Response(content=response_data, media_type="application/json")
+    return response_data
 
 @app.get("/EstadoCuenta", 
          summary="Consulta El estado de cuenta", 
          description="Consulta el estado de cuenta del cliente", 
          tags=['Estado de Cuenta'])
 @limiter.exempt
-def datos_perfil(request: Request):
+def EstadoCuenta(request: Request):
     """Solcitar datos del pefil de IOL
     """
     response_data = funcionesIOL.estado_cuenta()
@@ -64,23 +64,19 @@ def datos_perfil(request: Request):
     if response_data=="API Caida":
         raise HTTPException (status_code=503, detail="API Caida, Servicio No Disponible")
     else:
-        return Response(content=response_data, media_type="application/json")
+        return response_data
 
-@app.get("/Portafolio", 
+@app.get("/Portafolio/{pais}", 
          summary="Consulta El Portafolio", 
          description="Consulta el portafolio del cliente", 
          tags=['Composicion del Portafolio'])
 @limiter.exempt
-def datos_perfil(request: Request):
+def portafolio(pais:schemas.PortafolioPais, request: Request):
     """Solcitar datos del pefil de IOL
     """
-    response_data = funcionesIOL.portafolio()
+    response_data = funcionesIOL.portafolio(pais)
 
-    return Response(content=response_data, media_type="application/json")
-
-
-
-
+    return response_data
 
 @app.post("/operaciones",tags=['Consulta Operaciones'])
 @limiter.limit("20/minute",
@@ -88,10 +84,11 @@ def datos_perfil(request: Request):
 def operaciones(item: schemas.Operacion, request: Request):
     """Solcitar datos del pefil de IOL
     """
+    
     response_data = funcionesIOL.consulta_operaciones(item.estado, item.desde, item.hasta, item.pais)
     #response_data.headers["X-Cat-Dog"] = "alone in the world" Primero se debe instanciar la clase Response
 
-    return Response(content=response_data, media_type="application/json")
+    return response_data
 
 @app.post("/mep", 
           tags=['Cotizacion Mep'],
@@ -128,7 +125,7 @@ def trade_long(request: Request, orden: schemas.Orden, db: Session = Depends(get
                                            precio=orden.precio,
                                            plazo = orden.plazo,
                                            validez=orden.validez)
-    return Response(content=json.dumps(operacion), media_type="application/json")
+    return Response(content=operacion, media_type="application/json")
 
 
 

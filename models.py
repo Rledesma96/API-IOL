@@ -11,7 +11,6 @@ class Consultas(Base):
     Fecha_consulta = Column(String, index=True)
     Bid = Column(Float, nullable=True, index=True)
     Ask = Column(Float, nullable=True, index=True)
-
 class TradesShort(Base):
     __tablename__ = "TradesShort"
 
@@ -25,7 +24,6 @@ class TradesShort(Base):
     Costo = Column(Float, index=True)
     Operado = Column(Boolean, index=True)
     Fecha_Trade = Column(String, index=True)
-
 class TradesLong(Base):
     __tablename__ = "TradesLong"
 
@@ -39,5 +37,13 @@ class TradesLong(Base):
     Costo = Column(Float, index=True)
     Operado = Column(Boolean, index=True)
     Fecha_Trade = Column(String, index=True)
+class Long(Base):
+    __tablename__ = "OperacionesLong"
 
-
+    IDLong = Column(String, primary_key=True, index=True)
+    Mercado = Column(String, index=True)
+    Stock = Column(String, index=True)
+    Cantidad = Column(Integer, index=True)
+    Precio = Column(Float, index=True)
+    Plazo = Column(String, index=True)
+    Validez = Column(String, index=True)

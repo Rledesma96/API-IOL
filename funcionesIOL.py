@@ -2,7 +2,7 @@ import requests
 import json
 import pandas as pd
 from typing import Union
-import datetime
+from datetime import datetime
 import config
 
 
@@ -27,13 +27,9 @@ def token():
 def datos_perfil():
     headers = {'Authorization': 'Bearer ' + token()}
     url = "https://api.invertironline.com/api/v2/datos-perfil"
-    r = requests.get(url=url, headers=headers).text
-    #response = json.loads(r)
-    #data_perfil = pd.DataFrame()
-    #data_perfil['Categorias'] = response.key
-    #data_perfil['Valores'] = response.values 
-
-    return r 
+    r = requests.get(url=url, headers=headers)
+    
+    return r.json()
 
 
 def estado_cuenta():
@@ -45,21 +41,21 @@ def estado_cuenta():
         if "message" in data and data['message'] == "En estos momentos estamos trabajando en la actualización de la información solicitada.":
             return "API Caida"
         else:
-            return r
+            return data
     else:
         return r
 
-def portafolio():
+def portafolio(pais:str="argentina"):
     headers = {'Authorization': 'Bearer ' + token()}
     url = "https://api.invertironline.com/api/v2/portafolio"
-    data = {'pais':'argentina'}
+    data = {'pais':pais}
     r = requests.get(url=url, headers=headers, data=data)
     if r.status_code==200:
         data = r.json()
         if "message" in data and data['message'] == "En estos momentos estamos trabajando en la actualización de la información solicitada.":
             return "API Caida"
         else:
-            return r
+            return data
         
 def consulta_operaciones(estado:str,desde:str,hasta:str,pais:str):
     #Valores permitidos
@@ -73,6 +69,8 @@ def consulta_operaciones(estado:str,desde:str,hasta:str,pais:str):
     
     headers = {'Authorization': 'Bearer ' + token()}
     url = "https://api.invertironline.com/api/v2/operaciones"
+    desde = datetime.strptime(desde, "%Y-%m-%d")
+    hasta = datetime.strptime(hasta, "%Y-%m-%d")
     data = {'filtro.estado': estado,
             'filtro.fechaDesde': desde,
             'filtro.fechaHasta': hasta,
@@ -85,7 +83,7 @@ def consulta_operaciones(estado:str,desde:str,hasta:str,pais:str):
         if "message" in data and data['message'] == "En estos momentos estamos trabajando en la actualización de la información solicitada.":
             return "API Caida"
         else:
-            return r
+            return data
 
 # =============================================================================
 # Obtencion de Datos de mercado
@@ -226,3 +224,5 @@ def vender_stock(simbolo:str,
 
 #comprar_stock("BOLT", 1, 15,"t0","2023-12-31")
 
+#print(consulta_operaciones("todas","2018-01-01","2018-06-30","argentina"))
+print(token())
