@@ -10,9 +10,29 @@ import json
 import funcionesIOL
 import models
 import schemas
+import redis
+from starlette import status
 
 def crear_database():
     return models.Base.metadata.create_all(bind=engine)
+
+def limitar_con_redis(client,key, limit):    
+    req = client.incr(key)    
+    if req == 1:        
+        client.expire(key, 60)        
+        ttl = 60    
+    else:        
+        ttl = client.ttl(key)    
+    if req > limit:        
+        return {            
+                "call": False,            
+                "ttl": ttl       
+                }    
+    else:        
+        return {            
+                "call": True,            
+                "ttl": ttl        
+                }
 
 crear_database()
 
@@ -28,6 +48,15 @@ def get_db():
         yield db
     finally:
         db.close()
+
+def get_redis():
+    # Verificar que esta corriendo localmente en consola
+    redis_conn = redis.Redis(host='localhost', port=6379, db=0)
+
+    try:
+        yield redis_conn
+    finally:
+        redis_conn.close()
 
 @app.get("/")
 @limiter.exempt
@@ -128,7 +157,25 @@ def trade_long(request: Request, orden: schemas.Orden, db: Session = Depends(get
     return Response(content=operacion, media_type="application/json")
 
 
+@app.get("/redis")
+def test(request: Request, redis=Depends(get_redis)):    
+  clientIp = request.client.host    
+ 
+  res = limitar_con_redis(redis,clientIp, 2)    
+  if res["call"]: 
+        redis.hset('disponible', mapping={
+                    "message": "Bienvenido",
+                        "ttl": res["ttl"]})  
 
+        return redis.hgetall('disponible')  
+  else:       
+     raise HTTPException(
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,      
+        detail={       
+           "message": "Limite alcanzado",      
+           "ttl": res["ttl"]    
+           }
+        )
 
 
 

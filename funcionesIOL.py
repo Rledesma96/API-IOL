@@ -225,4 +225,4 @@ def vender_stock(simbolo:str,
 #comprar_stock("BOLT", 1, 15,"t0","2023-12-31")
 
 #print(consulta_operaciones("todas","2018-01-01","2018-06-30","argentina"))
-print(token())
+#print(token())
