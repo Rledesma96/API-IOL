@@ -1,4 +1,5 @@
 from fastapi import Depends, FastAPI, HTTPException, Request, Response
+from fastapi.responses import HTMLResponse, PlainTextResponse
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -15,6 +16,8 @@ from starlette import status
 
 def crear_database():
     return models.Base.metadata.create_all(bind=engine)
+
+
 
 def limitar_con_redis(client,key, limit):    
     req = client.incr(key)    
@@ -40,7 +43,31 @@ limiter = Limiter(key_func=get_ipaddr, default_limits=['5minute'])
 app = FastAPI(title="API-IOL")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+creditos_disponibles = {}
 
+def limitar_porcreditos(ip_cliente, creditos_endpoint): 
+    
+    try:
+        req=creditos_disponibles[ip_cliente]
+        
+        if req==0:
+            return {            
+                "call": False,            
+                "creditos": req   
+                }   
+        else:    
+            creditos_disponibles[ip_cliente]=creditos_disponibles[ip_cliente]-1
+            return {            
+                "call": True,            
+                "creditos": creditos_disponibles       
+                }
+   
+    except KeyError:
+        creditos_disponibles[ip_cliente]=creditos_endpoint
+        return {            
+            "call": True,            
+            "creditos": creditos_endpoint       
+            } 
 
 def get_db():
     db = SessionLocal()
@@ -156,7 +183,6 @@ def trade_long(request: Request, orden: schemas.Orden, db: Session = Depends(get
                                            validez=orden.validez)
     return Response(content=operacion, media_type="application/json")
 
-
 @app.get("/redis")
 def test(request: Request, redis=Depends(get_redis)):    
   clientIp = request.client.host    
@@ -177,7 +203,14 @@ def test(request: Request, redis=Depends(get_redis)):
            }
         )
 
-
+@app.get("/Creditos")
+def creditos(request: Request):
+    #envia IP del dispositivo, maximos creditos para este endpoint
+    tengo_creditos=limitar_porcreditos(get_remote_address,2)
+    if tengo_creditos['call']==True:
+        return PlainTextResponse("Bienvenidos!")
+    else:
+        return PlainTextResponse("Sin creditos disponibles")     
 
 
 
