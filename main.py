@@ -160,7 +160,6 @@ def mep(simbolo: schemas.ConsultaMep, request:Request):
     else:
         raise HTTPException(status_code=400, detail="Ticker sin mep")
 
-
 @app.post("/consultas/", response_model=schemas.Consulta, tags=['Nueva alta en tabla Consultas'])
 @limiter.limit("1/minute", 
                error_message="Superado el máximo de consultas permitido por minuto")
@@ -210,7 +209,13 @@ def creditos(request: Request):
     if tengo_creditos['call']==True:
         return PlainTextResponse("Bienvenidos!")
     else:
-        return PlainTextResponse("Sin creditos disponibles")     
+        return HTTPException(
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,      
+        detail={       
+           "message": "Te quedaste sin créditos",      
+           
+           }
+        )    
 
 
 
